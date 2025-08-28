@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  username      String
+  email         String    @unique
+  image         String?
+  chats         chat[]
+  sent_messages message[]
+  started_chats chat[]    @relation("started_chats")
+  createdat     DateTime  @default(now())
+  updatedat     DateTime  @updatedAt
+}
+
+enum chat_type {
+  PC
+  GC
+}
+
+model chat {
+  id           String    @id @default(uuid())
+  type         chat_type @default(PC)
+  users        User[]
+  isaccepted   Boolean   @default(false)
+  isacceptedat DateTime?
+  acceptedby   String
+  startedby    String
+  messages     message[]
+  starteduser  User      @relation("started_chats", fields: [startedby], references: [id], onDelete: Cascade)
+  createdat    DateTime  @default(now())
+  updatedat    DateTime  @updatedAt
+}
+
+enum message_type {
+  USER
+  SYSTEM
+}
+
+model message {
+  id        String       @id @default(uuid())
+  sender_id String
+  sender    User         @relation(fields: [sender_id], references: [id], onDelete: Cascade)
+  chat_id   String
+  chat      chat         @relation(fields: [chat_id], references: [id], onDelete: Cascade)
+  type      message_type @default(USER)
+  content   Json
+  createdat DateTime     @default(now())
+  updatedat DateTime     @updatedAt
+}
