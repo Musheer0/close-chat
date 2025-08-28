@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import {verifyWebhook} from '@clerk/nextjs/webhooks'
-import prisma from "@/lib/prisma";
+import prisma from "@/prisma";
 export const POST = async(req:NextRequest)=>{
     const wh =await verifyWebhook(req,{signingSecret:process.env.CLER_WH!})
     if(wh){

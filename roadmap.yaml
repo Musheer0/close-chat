@@ -1,0 +1,19 @@
+deploy [] 
+connect to clerk []
+create user share card[]
+search user by email  []
+add user by share card[]
+accept/reject request buttons []
+chat sidebar []
+chat:id []
+send message []
+call []
+pwa  []
+----------------------------------------------------
+user_status []
+chat_room   []
+peer-to-peer-webrtc[]
+====================OPTIONAL=========================
+share screen []
+=====================================================
+deploy []
