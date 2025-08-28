@@ -14,7 +14,8 @@ export const POST = async(req:NextRequest)=>{
                     data:{
                         id,
                         username:username||primary_email_address.email_address.split('@')[0],
-                        email: primary_email_address.email_address
+                        email: primary_email_address.email_address,
+                        image:image_url
                     }
                 })
                }
@@ -38,7 +39,8 @@ export const POST = async(req:NextRequest)=>{
                     data:{
                         id,
                         username:username||primary_email_address.email_address.split('@')[0],
-                        email: primary_email_address.email_address
+                        email: primary_email_address.email_address,
+                        image:image_url
                     }
                 })
                }
