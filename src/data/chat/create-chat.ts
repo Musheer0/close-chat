@@ -1,8 +1,9 @@
 "use server";
 
+import { ChatResponse } from "@/hooks/use-chats";
 import { sanitizeChat } from "@/lib/utils";
 import prisma from "@/prisma";
-import { setCache } from "@/redis";
+import { getCache, setCache } from "@/redis";
 import { auth } from "@clerk/nextjs/server";
 
 
@@ -52,6 +53,11 @@ export async function createChat(userId: string) {
       }
     } },
   });
+    const cache = await getCache<ChatResponse>(`sanitized:chat:${userId}:cursor:empty`)
+    if(cache){
+      const new_cache = {...cache,data:[sanitizeChat(newChat,currentUserId),...cache.data]}
+      await setCache(`sanitized:chat:${userId}:cursor:empty`,new_cache)
+    }
   await setCache(`chat:${newChat.id}`,newChat)
   return sanitizeChat(newChat, currentUserId);
 }

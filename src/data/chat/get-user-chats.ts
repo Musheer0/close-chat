@@ -14,7 +14,9 @@ export async function getChats(cursorId?: string, ) {
   const cache =await getCache<ChatResponse>(`sanitized:chat:${currentUserId}:cursor:${cursorId||'empty'}`)
   if(cache){
     console.log('cache cursor hit------------',cursorId||'empty')
-     return cache
+    if(cache.data.length>0){
+       return cache
+    }
   }
   const chats = await prisma.chat.findMany({
     where: { users: { some: { id: currentUserId } } },

@@ -3,10 +3,13 @@ import ShareCard from '@/components/user/share-card';
 import React from 'react';
 import {Toaster} from 'sonner'
 import {ReactQueryDevtoolsPanel} from '@tanstack/react-query-devtools'
+import SocketProvider from '@/components/providers/global/socket-provider';
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <ReactQueryClientProvider>
-          {children}
+         <SocketProvider>
+           {children}
+         </SocketProvider>
           <ShareCard/>
           <Toaster richColors/>
         <ReactQueryDevtoolsPanel/>
