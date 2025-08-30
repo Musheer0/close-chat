@@ -21,9 +21,7 @@ export async function getChats(cursorId?: string, ) {
   const chats = await prisma.chat.findMany({
     where: { users: { some: { id: currentUserId } } },
     include: { users:{
-      where:{
-        id:{not: currentUserId}
-      }
+     take:2
     } },
     orderBy: { createdat: "desc" },
     take,

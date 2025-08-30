@@ -20,7 +20,7 @@ const ChatMessage = ({ msg, chat }: { msg: message, chat: Chat }) => {
           "rounded-xl w-fit px-4 py-3",
           msg.sender_id !== chat.user?.id
             ? "ml-auto rounded-br-none bg-blue-500 text-white"
-            : "bg-gray-200 text-black rounded-bl-none"
+            : "bg-muted-foreground/10 text-black rounded-bl-none"
         )}
       >
         {(msg.content as MessageContent)?.text}

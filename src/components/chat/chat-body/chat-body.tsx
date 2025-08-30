@@ -5,6 +5,11 @@ import { Chat } from "@/lib/types";
 import { useChatMessages } from "@/hooks/use-chat-messages";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import ChatMessage from "./chat-message";
+import { useSocket } from "@/components/providers/global/socket-provider";
+import { useUser } from "@clerk/nextjs";
+import { message } from "@prisma/client";
+import { updateChatCache } from "@/lib/cache/update-messages-cache";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ChatBody = ({ chat }: { chat: Chat }) => {
   const {
@@ -17,10 +22,12 @@ const ChatBody = ({ chat }: { chat: Chat }) => {
   } = useChatMessages(chat.id);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const queryClient =useQueryClient()
   const [scrollUp, setScrollUp] = useState(false);
-
+  const user = useUser()
+  const socket = useSocket()
   const messages = data?.pages.flatMap((page) => page.data) ?? [];
-
+  const [isTyping ,setIsTyping] =useState(false)
   // Scroll handling
   const handleScroll = () => {
     const container = containerRef.current;
@@ -36,6 +43,22 @@ const ChatBody = ({ chat }: { chat: Chat }) => {
     }
   };
 
+
+  const handleSocketFocus = (data:string)=>{
+    if(data!==user.user?.id){
+      setIsTyping(true)
+    }
+  }
+  const handleSocketBlur = (data:string)=>{
+    if(data!==user.user?.id){
+      setIsTyping(false)
+    }
+  }
+  const handleReciveMessag =(data:message)=>{
+    if(data.sender_id!==user.user?.id){
+      updateChatCache(queryClient,chat.id,data)
+    }
+  }
   // Auto scroll when messages change, but only if not scrolled up
   useEffect(() => {
     const container = containerRef.current;
@@ -43,6 +66,17 @@ const ChatBody = ({ chat }: { chat: Chat }) => {
 
     container.scrollTop = container.scrollHeight;
   }, [messages, scrollUp]);
+  //socket events
+  useEffect(()=>{
+    socket.on(`chat:input:focus:${chat.id}`,handleSocketFocus)
+    socket.on(`chat:input:blur:${chat.id}`,handleSocketBlur)
+    socket.on(`chat:message:${chat.id}`,handleReciveMessag)
+    return ()=>{
+    socket.off(`chat:input:focus:${chat.id}`,handleSocketFocus)
+    socket.off(`chat:input:blur:${chat.id}`,handleSocketBlur)
+    socket.off(`chat:message:${chat.id}`,handleReciveMessag)
+    }
+  },[socket])
 
   if (status === "pending")
     return <div className="w-full flex-1 p-3">Loading messages...</div>;
@@ -90,6 +124,13 @@ const ChatBody = ({ chat }: { chat: Chat }) => {
           <ChatMessage msg={msg} chat={chat} />
         </React.Fragment>
       ))}
+      {isTyping &&
+      <p className="bg-muted-foreground/10 flex items-center gap-1 p-4  rounded-2xl rounded-bl-none mr-auto w-fit">
+      <div className="w-2 h-2 rounded-full animate-bounce bg-muted-foreground/50"></div>
+      <div className="w-2 h-2 rounded-full animate-bounce bg-muted-foreground/50"></div>
+      <div className="w-2 h-2 rounded-full animate-bounce bg-muted-foreground/50"></div>
+      </p>
+      }
     </div>
   );
 };

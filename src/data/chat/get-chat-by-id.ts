@@ -14,7 +14,6 @@ export async function getChatById(chatId: string) {
      if( cache.startedby!==currentUserId && cache.acceptedby!==currentUserId){
       throw new Error("Chat not found");
     }
-    console.log('cache hit------------',chatId)
     return sanitizeChat(cache,currentUserId)
   }
   const chat = await prisma.chat.findFirst({
@@ -26,9 +25,7 @@ export async function getChatById(chatId: string) {
       }
     },
     include:  { users:{
-      where:{
-        id:{not: currentUserId}
-      }
+      take:2
     } },
 
   });

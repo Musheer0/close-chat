@@ -3,10 +3,12 @@ import { useSocket } from '@/components/providers/global/socket-provider'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { publicUser } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { usersStatusStore } from '@/stores/users-status-store'
 import React, { useEffect, useState } from 'react'
 
 const SocketUserAvatar = ({ user }: { user: publicUser }) => {
   const socket = useSocket()
+  const {addStatus} = usersStatusStore()
   const [isOnline, setIsOnline] = useState(false)
   const [isJoined, setIsJoined] = useState(false)
 
@@ -15,6 +17,9 @@ const SocketUserAvatar = ({ user }: { user: publicUser }) => {
 
     const handler = (data: { online: boolean }) => {
       setIsOnline(data.online)
+      if(user.id){
+        addStatus(user.id,data.online)
+      }
     }
 
     socket.on("online:status:" + user.id, handler)
