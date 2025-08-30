@@ -4,12 +4,8 @@ import { useQuery, useQueryClient, InfiniteData } from '@tanstack/react-query'
 import React, { useEffect, useState } from 'react'
 import { Chat } from '@/lib/types'
 import { ChatResponse } from '@/hooks/use-chats'
-import ChatHeader from '../chat-body/chat-header'
-import ChatBody from '../chat-body/chat-body'
-import ChatInput from '../chat-body/chat-input'
-import ChatMessageRequest from '../chat-body/chat-message-request'
 
-const ChatView = ({ id }: { id: string }) => {
+const CallView = ({ id }: { id: string }) => {
   const queryClient = useQueryClient()
   const [chat, setChat] = useState<Chat | null>(null)
   const [isFecthing,setISFecthing] = useState(false)
@@ -45,22 +41,15 @@ const ChatView = ({ id }: { id: string }) => {
   if (isLoading) return <div>Loading...</div>
   if (!chat && !isFecthing) return <div>Loading...</div>
   if (isError) return <div>Failed to load chat</div>
-  if (!chat  ) return <div>No chat found</div>
+  if (!chat) return <div>No chat found</div>
 
   const showChatBody = chat.startedByMe ? true : chat.isAccepted
   return (
     <div className='flex flex-1 flex-col h-full '>
-      <ChatHeader chat={chat}/>
-      {showChatBody ?
-      <>
-        <ChatBody chat={chat}/>
-        <ChatInput chat={chat}/>
-      </>
-      :
-        <ChatMessageRequest chat={chat}/>
-      }
+      
+     
     </div>
   )
 }
 
-export default ChatView
+export default CallView

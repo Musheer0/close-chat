@@ -1,8 +1,8 @@
 "use client"
-import { Button } from '@/components/ui/button'
+import SendCallButton from '@/components/call/send-call-button'
 import UserAvatar from '@/components/user/avatar/user-avatar'
 import { Chat } from '@/lib/types'
-import { PhoneIcon} from 'lucide-react'
+
 import React from 'react'
 
 const ChatHeader = ({chat}:{chat:Chat}) => {
@@ -16,10 +16,7 @@ const ChatHeader = ({chat}:{chat:Chat}) => {
             <p className='text-xs text-muted-foreground leading-none'>offline</p>
         </div>
         <div className="actions flex items-center gap-3">
-            <Button size={'icon'} variant={'outline'}>
-                <PhoneIcon/>
-            </Button>
-          
+          <SendCallButton chat={chat}/> 
         </div>
     </div>
   )
