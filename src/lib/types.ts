@@ -17,6 +17,7 @@ export type Chat = {
     id: string;
     username: string;
     image: string | null;
+    email?:string
   } | null;
 };
 
@@ -30,4 +31,5 @@ export type MessageContent = {
   type: "system" | "text";
   icon?: "none" | "video" | "phone";
   text: string;
+  joined?:boolean
 };

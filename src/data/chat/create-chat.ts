@@ -2,6 +2,7 @@
 
 import { sanitizeChat } from "@/lib/utils";
 import prisma from "@/prisma";
+import { setCache } from "@/redis";
 import { auth } from "@clerk/nextjs/server";
 
 
@@ -51,7 +52,7 @@ export async function createChat(userId: string) {
       }
     } },
   });
-
+  await setCache(`chat:${newChat.id}`,newChat)
   return sanitizeChat(newChat, currentUserId);
 }
 

@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user/avatar/user-avatar'
 import { Chat } from '@/lib/types'
-import { PhoneIcon, VideoIcon } from 'lucide-react'
+import { PhoneIcon} from 'lucide-react'
 import React from 'react'
 
 const ChatHeader = ({chat}:{chat:Chat}) => {
@@ -19,9 +19,7 @@ const ChatHeader = ({chat}:{chat:Chat}) => {
             <Button size={'icon'} variant={'outline'}>
                 <PhoneIcon/>
             </Button>
-            <Button size={'icon'} variant={'outline'}>
-                <VideoIcon/>
-            </Button>
+          
         </div>
     </div>
   )

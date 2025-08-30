@@ -1,8 +1,9 @@
 "use server"
 import { MessageContent } from "@/lib/types";
 import prisma from "@/prisma";
+import { setCache } from "@/redis";
 
-export async function CreateSystemMessage({
+export async function sendSystemMessage({
   userId,
   chatId,
   content,
@@ -11,7 +12,7 @@ export async function CreateSystemMessage({
   chatId: string;
   content: MessageContent;
 }) {
-  return prisma.message.create({
+  const msg =await prisma.message.create({
     data: {
       sender_id: userId, 
       chat_id: chatId,
@@ -19,4 +20,6 @@ export async function CreateSystemMessage({
       content,
     },
   });
+  await setCache('system:message:'+chatId+':'+msg.id,msg,60*60);
+  return msg
 }

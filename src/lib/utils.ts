@@ -1,4 +1,3 @@
-import { chat } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { ChatWithUsers } from "./types";

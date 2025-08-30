@@ -2,9 +2,9 @@
 "use client"
 import { Button } from '@/components/ui/button'
 import { sendMessage } from '@/data/messages/send-user-message'
-import { ChatMessageResponse } from '@/hooks/use-chat-messages'
+import { updateChatCache } from '@/lib/cache/update-messages-cache'
 import { Chat } from '@/lib/types'
-import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { SendIcon } from 'lucide-react'
 import React, { useState } from 'react'
 import TextareaAutosize from 'react-autosize-textarea'
@@ -17,29 +17,7 @@ const ChatInput = ({ chat }: { chat: Chat }) => {
     mutationFn: sendMessage,
     onSuccess: (newMessage) => {
   if (!newMessage) return;
-
-  queryClient.setQueryData<InfiniteData<ChatMessageResponse>>(
-    ["chat-messages-" + chat.id],
-    (oldData) => {
-      if (!oldData) {
-        // no previous data, create a new page
-        return {
-          pages: [{ data: [newMessage], cursor: null }],
-          pageParams: []
-        }
-      }
-
-      // copy old pages and prepend new message to first page
-      const newPages = oldData.pages.map((page, idx) => 
-        idx === 0
-          ? { ...page, data: [ newMessage,...page.data,] } // or [newMessage, ...page.data] if newest on top
-          : page
-      )
-
-      return { ...oldData, pages: newPages, pageParams: [...oldData.pageParams] }
-    }
-  )
-
+ updateChatCache(queryClient,chat.id,newMessage)
   setContent("")
 },
     onError: () => {

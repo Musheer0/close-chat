@@ -3,17 +3,17 @@ import { ChatWithUsers } from "@/lib/types";
 import prisma from "@/prisma";
 import { getCache } from "@/redis";
 import { auth } from "@clerk/nextjs/server";
+import { updateSystemMessage } from "./update-system-message";
 
-export async function sendMessage({
+export async function endCall({
   chatId,
-  content,
+  id
 }: {
   chatId: string;
-  content: string;
+  id:string;
 }) {
   const {userId} =await auth()
   if(!userId) throw new Error("Un-authorized")
-  // check if user belongs to chat
   const cache = await getCache<ChatWithUsers>(`chat:${chatId}`)
   if(cache){
     console.log(cache)
@@ -35,17 +35,7 @@ export async function sendMessage({
 
   if (!chat) throw new Error("Chat not found");
   }
-
-  return prisma.message.create({
-    data: {
-      sender_id: userId,
-      chat_id: chatId,
-      type: "USER",
-      content:{
-        type:"user",
-        text:content
-      },
-    },
-  });
+  const call = await updateSystemMessage({id,chatId})
+  return call
 }
 
