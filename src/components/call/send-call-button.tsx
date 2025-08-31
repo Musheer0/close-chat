@@ -8,21 +8,29 @@ import { sendCall } from '@/data/messages/send-call'
 import { useRouter } from 'next/navigation'
 import { updateChatCache } from '@/lib/cache/update-messages-cache'
 import { toast } from 'sonner'
+import {useSocket} from '@/components/providers/global/socket-provider'
+import { useUser } from '@clerk/nextjs'
 const SendCallButton = ({chat}:{chat:Chat}) => {
   const router =useRouter()
   const queryCliet =useQueryClient()
+  const socket =useSocket()
+  const {user}=useUser()
   const {mutate,isPending} =useMutation({
     mutationFn:sendCall,
     onSuccess:(data)=>{
       if(data){
         updateChatCache(queryCliet,chat.id,data)
-        router.push('/chats/'+chat.id+'/'+data.id)
+        if(user){
+           socket.emit("send:chat:message",data)
+          socket.emit('initialize:call',{id:chat.user?.id,info:{call_id:'test',user:{username:user.username,id:user.id}}})
+        }
       }
     },
     onError(){
       toast.error("error calling user try again")
     }
   })
+if(user)
   return (
     <Button
     disabled={isPending}

@@ -10,6 +10,9 @@ import { useUser } from "@clerk/nextjs";
 import { message } from "@prisma/client";
 import { updateChatCache } from "@/lib/cache/update-messages-cache";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import CallToast from "@/components/call/call-toast";
 
 const ChatBody = ({ chat }: { chat: Chat }) => {
   const {
@@ -59,6 +62,10 @@ const ChatBody = ({ chat }: { chat: Chat }) => {
       updateChatCache(queryClient,chat.id,data)
     }
   }
+  const handelRingCall=(data:{call_id:string,user:{username:string,id:string}})=>{
+    console.log(data)
+    toast(<CallToast chat={chat} data={data}/>,{duration:30000})
+  }
   // Auto scroll when messages change, but only if not scrolled up
   useEffect(() => {
     const container = containerRef.current;
@@ -71,10 +78,12 @@ const ChatBody = ({ chat }: { chat: Chat }) => {
     socket.on(`chat:input:focus:${chat.id}`,handleSocketFocus)
     socket.on(`chat:input:blur:${chat.id}`,handleSocketBlur)
     socket.on(`chat:message:${chat.id}`,handleReciveMessag)
+    socket.on(`${user.user?.id}:ring`,handelRingCall)
     return ()=>{
     socket.off(`chat:input:focus:${chat.id}`,handleSocketFocus)
     socket.off(`chat:input:blur:${chat.id}`,handleSocketBlur)
     socket.off(`chat:message:${chat.id}`,handleReciveMessag)
+    socket.off(`${user.user?.id}:ring`,handelRingCall)
     }
   },[socket])
 
@@ -93,6 +102,7 @@ const ChatBody = ({ chat }: { chat: Chat }) => {
       onScroll={handleScroll}
       className="w-full flex-1 overflow-y-auto p-4 space-y-2"
     >
+
       {messages.length === 0 && (
         <p className="text-gray-500 text-sm">No messages yet…</p>
       )}
@@ -124,6 +134,7 @@ const ChatBody = ({ chat }: { chat: Chat }) => {
           <ChatMessage msg={msg} chat={chat} />
         </React.Fragment>
       ))}
+      {`${user.user?.id}:ring`}
       {isTyping &&
       <p className="bg-muted-foreground/10 flex items-center gap-1 p-4  rounded-2xl rounded-bl-none mr-auto w-fit">
       <div className="w-2 h-2 rounded-full animate-bounce bg-muted-foreground/50"></div>

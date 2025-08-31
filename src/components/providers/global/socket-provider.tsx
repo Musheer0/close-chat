@@ -1,12 +1,15 @@
 "use client"
+import { useUser } from '@clerk/nextjs';
 import React,{createContext,useContext, useEffect, useState} from 'react';
 import { io, Socket } from "socket.io-client"
+import { toast } from 'sonner';
 
 type SocketContextType =  Socket
 
 const SocketContext =createContext<SocketContextType|null>(null)
 const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     const [socket ,setSocket]= useState<null|Socket>(null)
+    const {user}=useUser()
     const handleConnect= async()=>{
         if(!socket){
                const s = io("http://localhost:3001", {
@@ -20,6 +23,8 @@ const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         useEffect(()=>{
             handleConnect()
         },[socket])
+
+        
 
   return (
     <SocketContext.Provider value={socket}>

@@ -12,7 +12,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
          </SocketProvider>
           <ShareCard/>
           <Toaster richColors/>
-        <ReactQueryDevtoolsPanel/>
         </ReactQueryClientProvider>
   );
 };

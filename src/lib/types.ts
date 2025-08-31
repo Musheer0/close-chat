@@ -33,3 +33,5 @@ export type MessageContent = {
   text: string;
   joined?:boolean
 };
+
+export type callToastData ={call_id:string,user:{username:string,id:string}}

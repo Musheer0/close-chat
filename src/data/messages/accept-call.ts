@@ -5,7 +5,7 @@ import { getCache } from "@/redis";
 import { auth } from "@clerk/nextjs/server";
 import { updateSystemMessage } from "./update-system-message";
 
-export async function endCall({
+export async function acceptCall({
   chatId,
   id
 }: {
@@ -34,7 +34,13 @@ export async function endCall({
 
   if (!chat) throw new Error("Chat not found");
   }
-  const call = await updateSystemMessage({id,chatId})
+  const call = await updateSystemMessage({id,chatId,content:{
+    type:'system',
+    text:'started call',
+    icon:'video',
+    joined:true
+  }
+  })
   return call
 }
 
